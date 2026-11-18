@@ -22,7 +22,7 @@ app.post("/api/chat", async (req, res) => {
                 error: "Messages harus berupa array"
             });
         }
-        
+
         const response = await fetch(
             "https://openrouter.ai/api/v1/chat/completions",
             {
@@ -39,3 +39,16 @@ app.post("/api/chat", async (req, res) => {
                 })
             }
         );
+
+        if (!response.ok) {
+        const errorData = await response.text();
+
+        console.error("OpenRouter Error:", errorData);
+
+        return res.status(response.status).json({
+            error: errorData
+        });
+    }
+
+    // Header untuk streaming
+    res.setHeader("Content-Type", "text/event-stream");
