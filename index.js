@@ -36,83 +36,85 @@ app.post("/api/chat", async (req, res) => {
                     messages: messages,
                     temperature: 0.7,
                     max_tokens: 1000,
+                    stream: true
                 })
             }
         );
 
         if (!response.ok) {
-        const errorData = await response.text();
+            const errorData = await response.text();
 
-        console.error("OpenRouter Error:", errorData);
+            console.error("OpenRouter Error:", errorData);
 
-        return res.status(response.status).json({
-            error: errorData
-        });
-    }
-
-    // Header untuk streaming
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    let buffer = "";
-
-    while (true) {
-        const { done, value } = await reader.read();
-
-        if (done) {
-            break;
+            return res.status(response.status).json({
+                error: errorData
+            });
         }
 
-        buffer += decoder.decode(value, {
-            stream: true
-        });
+        // Header untuk streaming
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
 
-        const lines = buffer.split("\n");
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-        // Simpan bagian terakhir karena mungkin belum lengkap
-    buffer = lines.pop();
+        let buffer = "";
 
-    for (const line of lines) {
-        const trimmedLine = line.trim();
+        while (true) {
+            const { done, value } = await reader.read();
 
-        if (!trimmedLine) {
-            continue;
-        }
-
-        if (!trimmedLine.startsWith("data:")) {
-            continue;
-        }
-
-        const data = trimmedLine.slice(5).trim();
-
-        if (data === "[DONE]") {
-            continue;
-        }
-
-        try {
-            const json = JSON.parse(data);
-
-            const content =
-                json.choices?.[0]?.delta?.content;
-
-            if (content) {
-                res.write(`data: ${JSON.stringify(content)}\n\n`);
+            if (done) {
+                break;
             }
 
-        } catch (error) {
-            console.error(
-                "Gagal parsing streaming data:",
-                error
-            );
-        }
-    }
+            buffer += decoder.decode(value, {
+                stream: true
+            });
 
-    res.write("data: [DONE]\n\n");
-    res.end();
+            const lines = buffer.split("\n");
+
+            // Simpan bagian terakhir karena mungkin belum lengkap
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+
+                if (!trimmedLine) {
+                    continue;
+                }
+
+                if (!trimmedLine.startsWith("data:")) {
+                    continue;
+                }
+
+                const data = trimmedLine.slice(5).trim();
+
+                if (data === "[DONE]") {
+                    continue;
+                }
+
+                try {
+                    const json = JSON.parse(data);
+
+                    const content =
+                        json.choices?.[0]?.delta?.content;
+
+                    if (content) {
+                        res.write(`data: ${JSON.stringify(content)}\n\n`);
+                    }
+
+                } catch (error) {
+                    console.error(
+                        "Gagal parsing streaming data:",
+                        error
+                    );
+                }
+            }
+        } // <--- KURUNG KURAWAL INI YANG SEBELUMNYA KURANG (Menutup blok while(true))
+
+        res.write("data: [DONE]\n\n");
+        res.end();
 
     } catch (error) {
         console.error("Server Error:", error);
