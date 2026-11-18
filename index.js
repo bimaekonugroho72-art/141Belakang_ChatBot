@@ -32,7 +32,7 @@ app.post("/api/chat", async (req, res) => {
                     "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: "nvidia/nemotron-3.5-super-v1:free",
+                    model: "openrouter/free",
                     messages: messages,
                     temperature: 0.7,
                     max_tokens: 1000,

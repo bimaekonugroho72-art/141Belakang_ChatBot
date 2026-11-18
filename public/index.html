@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot AI - Express.js</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Menghubungkan file CSS terpisah -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 h-screen flex flex-col justify-between">
+
+    <!-- Container Utama -->
+    <div class="flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-xl bg-white rounded-xl shadow-lg overflow-hidden flex flex-col h-[600px]">
+            
+            <!-- Header Chatbot -->
+            <div class="bg-gray-900 text-white p-4 text-center">
+                <h1 class="text-lg font-bold">Chatbot AI</h1>
+                <p class="text-xs text-gray-400">NVIDIA Nemotron 3 Ultra</p>
+            </div>
+
+            <!-- Area Chat / Riwayat Pesan -->
+            <div id="chat-container" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50">
+                <!-- Pesan Bot Awal -->
+                <div class="flex justify-start">
+                    <div class="bg-gray-200 text-gray-800 p-3 rounded-xl max-w-[80%] text-sm">
+                        Halo! Ada yang bisa saya bantu?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Pesan & Tombol Kirim -->
+            <div class="p-3 bg-white border-t border-gray-200 flex gap-2">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    placeholder="Ketik pesan..." 
+                    class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button 
+                    onclick="sendMessage()" 
+                    class="bg-gray-900 hover:bg-black text-white px-5 py-2 rounded-lg text-sm font-medium transition"
+                >
+                    Kirim
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Menghubungkan file JavaScript terpisah -->
+    <script src="script.js"></script>
+</body>
+</html>
